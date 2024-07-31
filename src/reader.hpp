@@ -474,6 +474,36 @@ public:
         return out;
     }
 
+    void load_worker(std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, uint16_t *> *chunk_cache, std::vector<std::pair<packed_reader *, std::tuple<size_t, size_t, size_t, size_t, size_t> *>> *worker_payload, std::mutex *worker_mutex, bool *worker_die)
+    {
+        while (!(*worker_die))
+        {
+            std::pair<packed_reader *, std::tuple<size_t, size_t, size_t, size_t, size_t> *> payload = {nullptr, nullptr};
+
+            worker_mutex->lock();
+            if (worker_payload->size() > 0)
+            {
+                payload = worker_payload.back();
+                worker_payload->pop_back();
+            }
+            worker_mutex->unlock();
+
+            if (payload.first != nullptr && payload.second != nullptr)
+            {
+                const packed_reader * chunk_reader = payload.first;
+                const std::tuple<size_t, size_t, size_t, size_t, size_t> * chunk_id = payload.second;
+
+                const uint16_t * chunk = chunk_reader->load_chunk(std::get<4>(*chunk_id));
+
+                (*chunk_cache)[*chunk_id] = chunk;
+            }
+            else
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            }
+        }
+    }
+
     uint16_t *load_region(
         size_t scale,
         size_t xs, size_t xe,
@@ -492,8 +522,9 @@ public:
         uint16_t *out_buffer = (uint16_t *)malloc(buffer_size);
 
         // Define map for storing already decompressed chunks
-        std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, std::future<uint16_t *>> chunk_cache;
-        std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, uint16_t *> chunk_cache_2;
+        std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, uint16_t *> chunk_cache;
+        std::vector<std::pair<packed_reader *, std::tuple<size_t, size_t, size_t, size_t, size_t> *>> worker_payloads;
+        //std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, uint16_t *> chunk_cache_2;
 
         // Scaled metachunk size
         const size_t mcx = mchunkx / scale;
@@ -512,8 +543,15 @@ public:
         size_t cymin, cymax, cysize;
         size_t czmin, czmax, czsize;
 
-        std::vector<std::tuple<size_t, size_t, size_t, size_t, size_t> *> all_chunk_ids;
         std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, packed_reader*> all_mchunks;
+
+        std::vector<std::thread> workers;
+        std::mutex worker_mutex;
+        bool worker_die = false;
+        for (size_t i = 0; i < 8; i++)
+        {
+            workers.push_back(std::thread(load_worker, &chunk_cache, &worker_payloads, &worker_mutex, &worker_die));
+        }
 
         for (size_t c = 0; c < channel_count; c++)
         {
@@ -565,12 +603,16 @@ public:
 
                         if(chunk_cache.count(*chunk_identifier) == 0) {
                             //chunk_cache[*chunk_identifier] = 0;
-                            chunk_cache[*chunk_identifier] = std::async(std::launch::async, [&chunk_reader, &sub_chunk_id](){
-                                return chunk_reader->load_chunk(sub_chunk_id); // Ofcourse make foo public in your snippet
-                            });
+                            //chunk_cache[*chunk_identifier] = std::async(std::launch::async, [&chunk_reader, &sub_chunk_id](){
+                            //    return chunk_reader->load_chunk(sub_chunk_id); // Ofcourse make foo public in your snippet
+                            //});
+                            chunk_cache[*chunk_identifier] = 0;
+                            worker_mutex.lock();
+                            worker_payloads.push_back({chunk_reader, chunk_identifier});
+                            worker_mutex.unlock();
+                        } else {
+                            delete chunk_identifier;
                         }
-
-                        delete chunk_identifier;
                     }
                 }
             }
@@ -641,14 +683,17 @@ public:
                             chunk_identifier = new std::tuple(c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id);
 
                             // Check if the chunk is in the tmp cache
-                            chunk = chunk_cache_2[*chunk_identifier];
-                            if (chunk == 0)
-                            {
-                                chunk = chunk_cache[*chunk_identifier].get();
-                                chunk_cache_2[*chunk_identifier] = chunk;
+                            do {
+                                chunk = chunk_cache[*chunk_identifier];
+                            while(chunk == 0);
+
+                            //if (chunk == 0)
+                            //{
+                            //    chunk = chunk_cache[*chunk_identifier].get();
+                            //    chunk_cache_2[*chunk_identifier] = chunk;
                                 //chunk = chunk_reader->load_chunk(sub_chunk_id);
                                 //chunk_cache[*chunk_identifier] = chunk;
-                            }
+                            //}
 
                             // Find the start/stop coordinates of this chunk
                             cxmin = ((size_t)chunk_reader->chunkx) * (x_in_chunk_offset / ((size_t)chunk_reader->chunkx)); // Minimum value of the chunk
