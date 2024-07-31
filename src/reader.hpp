@@ -639,8 +639,8 @@ public:
                             chunk = chunk_cache[*chunk_identifier].get();
                             if (chunk == 0)
                             {
-                                chunk = chunk_reader->load_chunk(sub_chunk_id);
-                                chunk_cache[*chunk_identifier] = chunk;
+                                //chunk = chunk_reader->load_chunk(sub_chunk_id);
+                                //chunk_cache[*chunk_identifier] = chunk;
                             }
 
                             // Find the start/stop coordinates of this chunk
