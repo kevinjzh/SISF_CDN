@@ -490,7 +490,7 @@ public:
         uint16_t *out_buffer = (uint16_t *)malloc(buffer_size);
 
         // Define map for storing already decompressed chunks
-        std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, uint16_t *> chunk_cache;
+        std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, std::future<uint16_t *>> chunk_cache;
 
         // Scaled metachunk size
         const size_t mcx = mchunkx / scale;
@@ -561,7 +561,8 @@ public:
                         chunk_identifier = new std::tuple(c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id);
 
                         if(chunk_cache.count(*chunk_identifier) == 0) {
-                            chunk_cache[*chunk_identifier] = 0;
+                            //chunk_cache[*chunk_identifier] = 0;
+                            chunk_cache[*chunk_identifier] = std::async(std::launch::async, chunk_reader->load_chunk, sub_chunk_id);
                         }
 
                         delete chunk_identifier;
@@ -571,6 +572,7 @@ public:
         }
 
         //std::cout << all_chunk_ids_2.size() << std::endl;
+
 
         for (size_t c = 0; c < channel_count; c++)
         {
@@ -634,7 +636,7 @@ public:
                             chunk_identifier = new std::tuple(c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id);
 
                             // Check if the chunk is in the tmp cache
-                            chunk = chunk_cache[*chunk_identifier];
+                            chunk = chunk_cache[*chunk_identifier].get();
                             if (chunk == 0)
                             {
                                 chunk = chunk_reader->load_chunk(sub_chunk_id);
