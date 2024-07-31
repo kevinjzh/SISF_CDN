@@ -684,10 +684,10 @@ public:
         //    delete chunk_identifier;
         //}
 
-        for (auto it = chunk_cache.begin(); it != chunk_cache.end(); it++)
-        {
-            free(it->second);
-        }
+        //for (auto it = chunk_cache.begin(); it != chunk_cache.end(); it++)
+        //{
+        //    free(it->second);
+        //}
 
         if (CHUNK_TIMER)
         {
