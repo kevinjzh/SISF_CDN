@@ -494,7 +494,9 @@ public:
             if (chunk_reader != nullptr)
             {
                 uint16_t * chunk = chunk_reader->load_chunk(std::get<4>(*chunk_id));
+                worker_mutex->lock();
                 chunk_cache[0][*chunk_id] = chunk;
+                worker_mutex->unlock();
                 delete chunk_id;
             }
             else
@@ -680,7 +682,9 @@ public:
                             // Check if the chunk is in the tmp cache
                             do
                             {
+                                worker_mutex.lock();
                                 chunk = chunk_cache[*chunk_identifier];
+                                worker_mutex.unlock();
                                 if (chunk == 0)
                                 {
                                     std::this_thread::sleep_for(std::chrono::microseconds(1));
