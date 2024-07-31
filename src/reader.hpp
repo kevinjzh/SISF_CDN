@@ -641,7 +641,7 @@ public:
                             // Replace the chunk id with the new one
                             if (chunk_identifier != nullptr)
                             {
-                                delete chunk_identifier;
+                                //delete chunk_identifier;
                             }
                             chunk_identifier = new std::tuple(c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id);
 
