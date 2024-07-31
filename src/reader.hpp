@@ -479,23 +479,24 @@ public:
         while (!(*worker_die))
         {
             std::pair<packed_reader *, std::tuple<size_t, size_t, size_t, size_t, size_t> *> payload = {nullptr, nullptr};
+            
+            packed_reader * chunk_reader;
+            std::tuple<size_t, size_t, size_t, size_t, size_t> * chunk_id;
 
             worker_mutex->lock();
             if (worker_payload->size() > 0)
             {
-                payload = worker_payload->back();
+                chunk_reader = worker_payload->back().first;
+                chunk_id = worker_payload->back().second;
+
                 worker_payload->pop_back();
             }
             worker_mutex->unlock();
 
             if (payload.first != nullptr && payload.second != nullptr)
             {
-                //packed_reader * chunk_reader = payload.first;
-                std::tuple<size_t, size_t, size_t, size_t, size_t> * chunk_id = payload.second;
-
-                //uint16_t * chunk = chunk_reader->load_chunk(std::get<4>(*chunk_id));
-
-                chunk_cache[0][*chunk_id] = (uint16_t *) malloc(32 * 32 * 32 * 3);
+                uint16_t * chunk = chunk_reader->load_chunk(std::get<4>(*chunk_id));
+                chunk_cache[0][*chunk_id] = chunk;
             }
             else
             {
