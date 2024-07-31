@@ -494,9 +494,9 @@ public:
             if (chunk_reader != nullptr)
             {
                 uint16_t * chunk = chunk_reader->load_chunk(std::get<4>(*chunk_id));
-                worker_mutex->lock();
+                //worker_mutex->lock();
                 chunk_cache[0][*chunk_id] = chunk;
-                worker_mutex->unlock();
+                //worker_mutex->unlock();
                 delete chunk_id;
             }
             else
@@ -551,11 +551,6 @@ public:
         std::mutex worker_mutex;
         bool worker_die = false;
 
-        for (size_t i = 0; i < 1; i++)
-        {
-            workers.push_back(std::thread(load_worker, &chunk_cache, &worker_payloads, &worker_mutex, &worker_die));
-        }
-
         for (size_t c = 0; c < channel_count; c++)
         {
             for (size_t i = xs; i < xe; i++)
@@ -606,15 +601,20 @@ public:
 
                         if(chunk_cache.count(*chunk_identifier) == 0) {
                             chunk_cache[*chunk_identifier] = 0;
-                            worker_mutex.lock();
+                            //worker_mutex.lock();
                             worker_payloads.push_back({chunk_reader, chunk_identifier});
-                            worker_mutex.unlock();
+                            //worker_mutex.unlock();
                         } else {
                             delete chunk_identifier;
                         }
                     }
                 }
             }
+        }
+
+        for (size_t i = 0; i < 1; i++)
+        {
+            workers.push_back(std::thread(load_worker, &chunk_cache, &worker_payloads, &worker_mutex, &worker_die));
         }
 
 
@@ -682,9 +682,9 @@ public:
                             // Check if the chunk is in the tmp cache
                             do
                             {
-                                worker_mutex.lock();
+                                //worker_mutex.lock();
                                 chunk = chunk_cache[*chunk_identifier];
-                                worker_mutex.unlock();
+                                //worker_mutex.unlock();
                                 if (chunk == 0)
                                 {
                                     std::this_thread::sleep_for(std::chrono::microseconds(1));
