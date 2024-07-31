@@ -577,11 +577,6 @@ public:
             }
         }
 
-//        std::cout << "All IDs:" << std::endl;
-//        for(auto a : all_chunk_ids) {
-//            std::cout << "\t" << std::get<0>(*a) << std::endl;
-//        }
-
         for (size_t c = 0; c < channel_count; c++)
         {
             for (size_t i = xs; i < xe; i++)
