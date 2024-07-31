@@ -730,11 +730,11 @@ public:
         }
 
         worker_die = true;
-        for (auto a : workers)
+        for (size_t i = 0; i < workers.size(); i++)
         {
-            if (a.joinable())
+            if (workers[i].joinable())
             {
-                a.join();
+                workers[i].join();
             }
         }
 
