@@ -511,6 +511,7 @@ public:
         size_t czmin, czmax, czsize;
 
         std::vector<std::tuple<size_t, size_t, size_t, size_t, size_t> *> all_chunk_ids;
+        std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, uint16_t *> all_chunk_ids_2;
         std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, packed_reader*> all_mchunks;
 
         for (size_t c = 0; c < channel_count; c++)
@@ -559,6 +560,9 @@ public:
                         // Find sub chunk id from coordinates
                         sub_chunk_id = chunk_reader->find_index(x_in_chunk_offset, y_in_chunk_offset, z_in_chunk_offset);
 
+                        all_chunk_ids_2[{c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id}];
+
+                        /*
                         chunk_identifier = new std::tuple(c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id);
 
                         bool found = false;
@@ -579,6 +583,9 @@ public:
                         {
                             delete chunk_identifier;
                         }
+                        */
+
+
                     }
                 }
             }
