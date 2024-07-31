@@ -561,7 +561,7 @@ public:
 
                         chunk_identifier = new std::tuple(c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id);
 
-                        if(all_chunk_ids_2.counts(*chunk_identifier) > 0) {
+                        if(all_chunk_ids_2.count(*chunk_identifier) > 0) {
                             all_chunk_ids_2[*chunk_identifier] = 0;
                         }
 
