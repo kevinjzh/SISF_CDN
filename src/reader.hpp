@@ -681,9 +681,14 @@ public:
                             chunk_identifier = new std::tuple(c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id);
 
                             // Check if the chunk is in the tmp cache
-                            do {
+                            do
+                            {
                                 chunk = chunk_cache[*chunk_identifier];
-                            } while(chunk == 0);
+                                if (chunk == 0)
+                                {
+                                    std::this_thread::sleep_for(std::chrono::microseconds(10));
+                                }
+                            } while (chunk == 0);
 
                             //if (chunk == 0)
                             //{
@@ -741,10 +746,10 @@ public:
         //    delete chunk_identifier;
         //}
 
-        //for (auto it = chunk_cache.begin(); it != chunk_cache.end(); it++)
-        //{
-        //    free(it->second);
-        //}
+        for (auto it = chunk_cache.begin(); it != chunk_cache.end(); it++)
+        {
+            free(it->second);
+        }
 
         if (CHUNK_TIMER)
         {
