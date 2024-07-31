@@ -484,8 +484,7 @@ public:
             worker_mutex->lock();
             if (worker_payload->size() > 0)
             {
-                chunk_reader = worker_payload->back().first;
-                chunk_id = worker_payload->back().second;
+                [chunk_reader, chunk_id] = worker_payload->back();
 
                 worker_payload->pop_back();
             }
@@ -498,7 +497,7 @@ public:
             }
             else
             {
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                std::this_thread::sleep_for(std::chrono::microseconds(10));
             }
         }
     }
