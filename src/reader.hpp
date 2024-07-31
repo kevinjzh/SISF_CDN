@@ -33,7 +33,7 @@ struct global_chunk_line
     uint16_t *ptr;
 };
 
-std::chrono::duration cache_lock_timeout = std::chrono::milliseconds(40);
+std::chrono::duration cache_lock_timeout = std::chrono::milliseconds(80);
 
 std::timed_mutex global_chunk_cache_mutex;
 size_t global_cache_size = 5000;
