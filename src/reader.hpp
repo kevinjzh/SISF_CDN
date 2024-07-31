@@ -495,6 +495,7 @@ public:
             {
                 uint16_t * chunk = chunk_reader->load_chunk(std::get<4>(*chunk_id));
                 chunk_cache[0][*chunk_id] = chunk;
+                delete chunk_id;
             }
             else
             {
@@ -602,10 +603,6 @@ public:
                         chunk_identifier = new std::tuple(c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id);
 
                         if(chunk_cache.count(*chunk_identifier) == 0) {
-                            //chunk_cache[*chunk_identifier] = 0;
-                            //chunk_cache[*chunk_identifier] = std::async(std::launch::async, [&chunk_reader, &sub_chunk_id](){
-                            //    return chunk_reader->load_chunk(sub_chunk_id); // Ofcourse make foo public in your snippet
-                            //});
                             chunk_cache[*chunk_identifier] = 0;
                             worker_mutex.lock();
                             worker_payloads.push_back({chunk_reader, chunk_identifier});
@@ -686,17 +683,9 @@ public:
                                 chunk = chunk_cache[*chunk_identifier];
                                 if (chunk == 0)
                                 {
-                                    std::this_thread::sleep_for(std::chrono::microseconds(10));
+                                    std::this_thread::sleep_for(std::chrono::microseconds(1));
                                 }
                             } while (chunk == 0);
-
-                            //if (chunk == 0)
-                            //{
-                            //    chunk = chunk_cache[*chunk_identifier].get();
-                            //    chunk_cache_2[*chunk_identifier] = chunk;
-                                //chunk = chunk_reader->load_chunk(sub_chunk_id);
-                                //chunk_cache[*chunk_identifier] = chunk;
-                            //}
 
                             // Find the start/stop coordinates of this chunk
                             cxmin = ((size_t)chunk_reader->chunkx) * (x_in_chunk_offset / ((size_t)chunk_reader->chunkx)); // Minimum value of the chunk
