@@ -549,7 +549,7 @@ public:
         std::mutex worker_mutex;
         bool worker_die = false;
 
-        for (size_t i = 0; i < 4; i++)
+        for (size_t i = 0; i < 1; i++)
         {
             workers.push_back(std::thread(load_worker, &chunk_cache, &worker_payloads, &worker_mutex, &worker_die));
         }
