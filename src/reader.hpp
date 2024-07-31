@@ -495,7 +495,7 @@ public:
 
                 uint16_t * chunk = chunk_reader->load_chunk(std::get<4>(*chunk_id));
 
-                (*chunk_cache)[*chunk_id] = chunk;
+                chunk_cache[0][*chunk_id] = chunk;
             }
             else
             {
