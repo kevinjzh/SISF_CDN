@@ -474,7 +474,7 @@ public:
         return out;
     }
 
-    void load_worker(std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, uint16_t *> *chunk_cache, std::vector<std::pair<packed_reader *, std::tuple<size_t, size_t, size_t, size_t, size_t> *>> *worker_payload, std::mutex *worker_mutex, bool *worker_die)
+    static void load_worker(std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, uint16_t *> *chunk_cache, std::vector<std::pair<packed_reader *, std::tuple<size_t, size_t, size_t, size_t, size_t> *>> *worker_payload, std::mutex *worker_mutex, bool *worker_die)
     {
         while (!(*worker_die))
         {
