@@ -729,6 +729,15 @@ public:
             }
         }
 
+        worker_die = true;
+        for (auto a : workers)
+        {
+            if (a.joinable())
+            {
+                a.join();
+            }
+        }
+
         //if (chunk_identifier != nullptr)
         //{
         //    delete chunk_identifier;
