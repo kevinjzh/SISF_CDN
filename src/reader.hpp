@@ -546,7 +546,7 @@ public:
         std::vector<std::thread> workers;
         std::mutex worker_mutex;
         bool worker_die = false;
-        std::cout << "Starting threads..." << std::endl;
+
         for (size_t i = 0; i < 8; i++)
         {
             workers.push_back(std::thread(load_worker, &chunk_cache, &worker_payloads, &worker_mutex, &worker_die));
