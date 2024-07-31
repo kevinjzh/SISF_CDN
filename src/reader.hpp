@@ -491,6 +491,7 @@ public:
 
         // Define map for storing already decompressed chunks
         std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, std::future<uint16_t *>> chunk_cache;
+        std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, uint16_t *> chunk_cache_2;
 
         // Scaled metachunk size
         const size_t mcx = mchunkx / scale;
@@ -638,9 +639,11 @@ public:
                             chunk_identifier = new std::tuple(c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id);
 
                             // Check if the chunk is in the tmp cache
-                            chunk = chunk_cache[*chunk_identifier].get();
+                            chunk = chunk_cache_2[*chunk_identifier];
                             if (chunk == 0)
                             {
+                                chunk = chunk_cache[*chunk_identifier].get();
+                                chunk_cache_2[*chunk_identifier] = chunk;
                                 //chunk = chunk_reader->load_chunk(sub_chunk_id);
                                 //chunk_cache[*chunk_identifier] = chunk;
                             }
