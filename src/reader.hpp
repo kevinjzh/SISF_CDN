@@ -560,7 +560,7 @@ public:
 
                         bool found = false;
                         for(auto a : all_chunk_ids) {
-                            if(*a == chunk_identifier) {
+                            if(*a == *chunk_identifier) {
                                 found = true;
                                 break;
                             }
