@@ -14,8 +14,8 @@
 #include <deque>
 #include <mutex>
 #include <map>
+#include <unordered_map>
 #include <chrono>
-#include <unordered_set>
 
 #include "vidlib.hpp"
 
@@ -511,7 +511,7 @@ public:
         size_t czmin, czmax, czsize;
 
         std::vector<std::tuple<size_t, size_t, size_t, size_t, size_t> *> all_chunk_ids;
-        std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, uint16_t *> all_chunk_ids_2;
+        std::unordered_map<std::tuple<size_t, size_t, size_t, size_t, size_t>, uint16_t *> all_chunk_ids_2;
         std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, packed_reader*> all_mchunks;
 
         for (size_t c = 0; c < channel_count; c++)
