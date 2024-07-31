@@ -477,9 +477,7 @@ public:
     static void load_worker(std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, uint16_t *> *chunk_cache, std::vector<std::pair<packed_reader *, std::tuple<size_t, size_t, size_t, size_t, size_t> *>> *worker_payload, std::mutex *worker_mutex, bool *worker_die)
     {
         while (!(*worker_die))
-        {
-            std::pair<packed_reader *, std::tuple<size_t, size_t, size_t, size_t, size_t> *> payload = {nullptr, nullptr};
-            
+        {        
             packed_reader * chunk_reader = nullptr;
             std::tuple<size_t, size_t, size_t, size_t, size_t> * chunk_id = nullptr;
 
@@ -493,7 +491,7 @@ public:
             }
             worker_mutex->unlock();
 
-            if (payload.first != nullptr && payload.second != nullptr)
+            if (chunk_reader != nullptr)
             {
                 uint16_t * chunk = chunk_reader->load_chunk(std::get<4>(*chunk_id));
                 chunk_cache[0][*chunk_id] = chunk;
