@@ -480,8 +480,8 @@ public:
         {
             std::pair<packed_reader *, std::tuple<size_t, size_t, size_t, size_t, size_t> *> payload = {nullptr, nullptr};
             
-            packed_reader * chunk_reader;
-            std::tuple<size_t, size_t, size_t, size_t, size_t> * chunk_id;
+            packed_reader * chunk_reader = nullptr;
+            std::tuple<size_t, size_t, size_t, size_t, size_t> * chunk_id = nullptr;
 
             worker_mutex->lock();
             if (worker_payload->size() > 0)
