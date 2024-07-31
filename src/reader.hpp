@@ -490,12 +490,12 @@ public:
 
             if (payload.first != nullptr && payload.second != nullptr)
             {
-                packed_reader * chunk_reader = payload.first;
-                std::tuple<size_t, size_t, size_t, size_t, size_t> * chunk_id = payload.second;
+                //packed_reader * chunk_reader = payload.first;
+                //std::tuple<size_t, size_t, size_t, size_t, size_t> * chunk_id = payload.second;
 
-                uint16_t * chunk = chunk_reader->load_chunk(std::get<4>(*chunk_id));
+                //uint16_t * chunk = chunk_reader->load_chunk(std::get<4>(*chunk_id));
 
-                chunk_cache[0][*chunk_id] = chunk;
+                chunk_cache[0][*chunk_id] = (uint16_t *) malloc(32 * 32 * 32 * 3);
             }
             else
             {
