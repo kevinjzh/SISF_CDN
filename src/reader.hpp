@@ -687,10 +687,10 @@ public:
             }
         }
 
-        if (chunk_identifier != nullptr)
-        {
-            delete chunk_identifier;
-        }
+        //if (chunk_identifier != nullptr)
+        //{
+        //    delete chunk_identifier;
+        //}
 
         for (auto it = chunk_cache.begin(); it != chunk_cache.end(); it++)
         {
