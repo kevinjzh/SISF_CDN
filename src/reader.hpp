@@ -15,6 +15,7 @@
 #include <mutex>
 #include <map>
 #include <chrono>
+#include <unordered_set>
 
 #include "vidlib.hpp"
 
@@ -508,6 +509,63 @@ public:
         size_t cxmin, cxmax, cxsize;
         size_t cymin, cymax, cysize;
         size_t czmin, czmax, czsize;
+
+        std::unordered_set<std::tuple<size_t, size_t, size_t, size_t, size_t>> all_chunk_ids;
+
+        for (size_t c = 0; c < channel_count; c++)
+        {
+            for (size_t i = xs; i < xe; i++)
+            {
+                const size_t xmin = mcx * (i / mcx);                             // lower bound of mchunk
+                const size_t chunk_id_x = i / ((size_t)mcx);                     // mchunk x id
+                const size_t x_in_chunk = i - xmin;                              // x displacement inside chunk
+
+                for (size_t j = ys; j < ye; j++)
+                {
+                    const size_t ymin = mcy * (j / mcy);
+                    const size_t chunk_id_y = j / ((size_t)mcy);
+                    const size_t y_in_chunk = j - ymin;
+
+                    for (size_t k = zs; k < ze; k++)
+                    {
+                        const size_t zmin = mcz * (k / mcz);
+                        const size_t chunk_id_z = k / ((size_t)mcz);
+                        const size_t z_in_chunk = k - zmin;
+
+                        bool force = false;
+                        if (chunk_reader == nullptr ||
+                            chunk_identifier == nullptr ||
+                            last_x != chunk_id_x ||
+                            last_y != chunk_id_y ||
+                            last_z != chunk_id_z ||
+                            last_c != c)
+                        {
+                            force = true;
+                            chunk_reader = get_mchunk(scale, c, chunk_id_x, chunk_id_y, chunk_id_z);
+
+                            last_x = chunk_id_x;
+                            last_y = chunk_id_y;
+                            last_z = chunk_id_z;
+                        }
+
+                        // Shift ranges for cropping
+                        const size_t x_in_chunk_offset = x_in_chunk + chunk_reader->cropstartx;
+                        const size_t y_in_chunk_offset = y_in_chunk + chunk_reader->cropstarty;
+                        const size_t z_in_chunk_offset = z_in_chunk + chunk_reader->cropstartz;
+
+                        // Find sub chunk id from coordinates
+                        sub_chunk_id = chunk_reader->find_index(x_in_chunk_offset, y_in_chunk_offset, z_in_chunk_offset);
+
+                        all_chunk_ids.insert( {c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id} );
+                    }
+                }
+            }
+        }
+
+        std::cout << "All IDs:" << std::cout;
+        for(auto a : all_chunk_ids) {
+            std::cout << "\t" << std::get<0>(a) << std::endl;
+        }
 
         for (size_t c = 0; c < channel_count; c++)
         {
