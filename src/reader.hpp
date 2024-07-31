@@ -566,33 +566,12 @@ public:
                         }
 
                         delete chunk_identifier;
-
-/*
-                        chunk_identifier = new std::tuple(c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id);
-
-                        bool found = false;
-                        for (auto a : all_chunk_ids)
-                        {
-                            if (*a == *chunk_identifier)
-                            {
-                                found = true;
-                                break;
-                            }
-                        }
-
-                        if (!found)
-                        {
-                            all_chunk_ids.push_back(chunk_identifier);
-                        }
-                        else
-                        {
-                            delete chunk_identifier;
-                        }
-                        */
                     }
                 }
             }
         }
+
+        std::cout << all_chunk_ids_2.size() << std::endl;
 
         for (size_t c = 0; c < channel_count; c++)
         {
