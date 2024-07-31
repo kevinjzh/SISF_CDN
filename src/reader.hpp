@@ -570,7 +570,7 @@ public:
             }
         }
 
-        std::cout << all_chunk_ids_2.size() << std::endl;
+        //std::cout << all_chunk_ids_2.size() << std::endl;
 
         for (size_t c = 0; c < channel_count; c++)
         {
