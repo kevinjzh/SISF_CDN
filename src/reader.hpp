@@ -483,7 +483,7 @@ public:
             worker_mutex->lock();
             if (worker_payload->size() > 0)
             {
-                payload = worker_payload.back();
+                payload = worker_payload->back();
                 worker_payload->pop_back();
             }
             worker_mutex->unlock();
