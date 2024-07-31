@@ -617,7 +617,7 @@ public:
                             last_c != c)
                         {
                             force = true;
-                            chunk_reader = get_mchunk(scale, c, chunk_id_x, chunk_id_y, chunk_id_z);
+                            chunk_reader = all_mchunks[{scale, c, chunk_id_x, chunk_id_y, chunk_id_z}];
 
                             last_x = chunk_id_x;
                             last_y = chunk_id_y;
