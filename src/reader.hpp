@@ -511,6 +511,7 @@ public:
         size_t czmin, czmax, czsize;
 
         std::vector<std::tuple<size_t, size_t, size_t, size_t, size_t> *> all_chunk_ids;
+        std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, packed_reader*> all_mchunks;
 
         for (size_t c = 0; c < channel_count; c++)
         {
@@ -543,6 +544,8 @@ public:
                             force = true;
                             chunk_reader = get_mchunk(scale, c, chunk_id_x, chunk_id_y, chunk_id_z);
 
+                            all_mchunks[{scale, c, chunk_id_x, chunk_id_y, chunk_id_z}] = chunk_reader;
+
                             last_x = chunk_id_x;
                             last_y = chunk_id_y;
                             last_z = chunk_id_z;
@@ -574,10 +577,10 @@ public:
             }
         }
 
-        std::cout << "All IDs:" << std::endl;
-        for(auto a : all_chunk_ids) {
-            std::cout << "\t" << std::get<0>(*a) << std::endl;
-        }
+//        std::cout << "All IDs:" << std::endl;
+//        for(auto a : all_chunk_ids) {
+//            std::cout << "\t" << std::get<0>(*a) << std::endl;
+//        }
 
         for (size_t c = 0; c < channel_count; c++)
         {
