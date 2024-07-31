@@ -484,7 +484,8 @@ public:
             worker_mutex->lock();
             if (worker_payload->size() > 0)
             {
-                [chunk_reader, chunk_id] = worker_payload->back();
+                chunk_reader = worker_payload->back().first;
+                chunk_id = worker_payload->back().second;
 
                 worker_payload->pop_back();
             }
