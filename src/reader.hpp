@@ -588,8 +588,8 @@ public:
                         {
                             delete chunk_identifier;
                         }
+                        */
                     }
-                    */
                 }
             }
         }
