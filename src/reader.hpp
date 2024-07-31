@@ -510,7 +510,6 @@ public:
         size_t czmin, czmax, czsize;
 
         std::vector<std::tuple<size_t, size_t, size_t, size_t, size_t> *> all_chunk_ids;
-        std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, uint16_t *> all_chunk_ids_2;
         std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, packed_reader*> all_mchunks;
 
         for (size_t c = 0; c < channel_count; c++)
@@ -561,8 +560,8 @@ public:
 
                         chunk_identifier = new std::tuple(c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id);
 
-                        if(all_chunk_ids_2.count(*chunk_identifier) == 0) {
-                            all_chunk_ids_2[*chunk_identifier] = 0;
+                        if(chunk_cache.count(*chunk_identifier) == 0) {
+                            chunk_cache[*chunk_identifier] = 0;
                         }
 
                         delete chunk_identifier;
