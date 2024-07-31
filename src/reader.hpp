@@ -564,7 +564,7 @@ public:
 
                         if(chunk_cache.count(*chunk_identifier) == 0) {
                             //chunk_cache[*chunk_identifier] = 0;
-                            chunk_cache[*chunk_identifier] = std::async(std::launch::deferred, [&chunk_reader, &sub_chunk_id](){
+                            chunk_cache[*chunk_identifier] = std::async(std::launch::async, [&chunk_reader, &sub_chunk_id](){
                                 return chunk_reader->load_chunk(sub_chunk_id); // Ofcourse make foo public in your snippet
                             });
                         }
