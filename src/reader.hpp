@@ -685,7 +685,7 @@ public:
                             // Check if the chunk is in the tmp cache
                             do {
                                 chunk = chunk_cache[*chunk_identifier];
-                            while(chunk == 0);
+                            } while(chunk == 0);
 
                             //if (chunk == 0)
                             //{
