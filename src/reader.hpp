@@ -227,6 +227,7 @@ public:
 
                 if (file.fail())
                 {
+                    file.close();
                     std::this_thread::sleep_for(std::chrono::milliseconds(1));
                     continue;
                 }
