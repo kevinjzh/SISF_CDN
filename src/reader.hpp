@@ -220,7 +220,7 @@ public:
             size_t buffer_size = sel->size;
             uint16_t *read_buffer = (uint16_t *)malloc(buffer_size);
 
-            const size_t retry_count = 10;
+            const size_t retry_count = 50;
             for (size_t i = 0; i < retry_count; i++)
             {
                 std::ifstream file(data_fname, std::ios::in | std::ios::binary);
