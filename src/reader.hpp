@@ -517,9 +517,9 @@ public:
         {
             for (size_t i = xs; i < xe; i++)
             {
-                const size_t xmin = mcx * (i / mcx);                             // lower bound of mchunk
-                const size_t chunk_id_x = i / ((size_t)mcx);                     // mchunk x id
-                const size_t x_in_chunk = i - xmin;                              // x displacement inside chunk
+                const size_t xmin = mcx * (i / mcx);         // lower bound of mchunk
+                const size_t chunk_id_x = i / ((size_t)mcx); // mchunk x id
+                const size_t x_in_chunk = i - xmin;          // x displacement inside chunk
 
                 for (size_t j = ys; j < ye; j++)
                 {
@@ -562,16 +562,21 @@ public:
                         chunk_identifier = new std::tuple(c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id);
 
                         bool found = false;
-                        for(auto a : all_chunk_ids) {
-                            if(*a == *chunk_identifier) {
+                        for (auto a : all_chunk_ids)
+                        {
+                            if (*a == *chunk_identifier)
+                            {
                                 found = true;
                                 break;
                             }
                         }
 
-                        if(!found) {
+                        if (!found)
+                        {
                             all_chunk_ids.push_back(chunk_identifier);
-                        } else {
+                        }
+                        else
+                        {
                             delete chunk_identifier;
                         }
                     }
