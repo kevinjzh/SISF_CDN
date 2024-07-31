@@ -571,6 +571,8 @@ public:
 
                         if(!found) {
                             all_chunk_ids.push_back(chunk_identifier);
+                        } else {
+                            delete chunk_identifier;
                         }
                     }
                 }
