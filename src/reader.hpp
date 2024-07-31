@@ -574,7 +574,7 @@ public:
             }
         }
 
-        std::cout << "All IDs:" << std::cout;
+        std::cout << "All IDs:" << std::endl;
         for(auto a : all_chunk_ids) {
             std::cout << "\t" << std::get<0>(*a) << std::endl;
         }
