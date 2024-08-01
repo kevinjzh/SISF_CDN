@@ -612,7 +612,7 @@ public:
             }
         }
 
-        for (size_t i = 0; i < 1; i++)
+        for (size_t i = 0; i < 2; i++)
         {
             workers.push_back(std::thread(load_worker, &chunk_cache, &worker_payloads, &worker_mutex, &worker_die));
         }
