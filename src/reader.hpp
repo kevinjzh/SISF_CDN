@@ -227,6 +227,11 @@ public:
             const size_t retry_count = 10;
             for (size_t i = 0; i < retry_count; i++)
             {
+                std::atomic<bool> done = false;
+
+                auto bleah = std::thread{[&]{
+                     done = true;         
+                }};
                 //std::ifstream file(data_fname, std::ios::in | std::ios::binary);
                 FILE * file = fopen(data_fname.c_str(), "rb");
 
