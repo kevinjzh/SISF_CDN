@@ -1340,7 +1340,7 @@ int main(int argc, char *argv[])
 
 		packed_reader * chunk_reader = reader->get_mchunk(scale, channel, chunk_i, chunk_j, chunk_k);
 
-		uint16_t * out_buffer = (uint16_t*) cmalloc(out_buffer_size, 1);
+		uint16_t * out_buffer = (uint16_t*) calloc(out_buffer_size, 1);
 
 		uint16_t * chunk = nullptr;
 		size_t last_sub_chunk_id = SIZE_MAX;
