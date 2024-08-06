@@ -229,9 +229,9 @@ public:
             {
                 std::atomic<bool> done = false;
 
-                auto bleah = std::thread{[&]{
-                     done = true;         
-                }};
+                //auto bleah = std::thread{[&]{
+                 //    done = true;         
+               //}};
                 //std::ifstream file(data_fname, std::ios::in | std::ios::binary);
                 FILE * file = fopen(data_fname.c_str(), "rb");
 
