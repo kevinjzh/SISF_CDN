@@ -1519,7 +1519,7 @@ int main(int argc, char *argv[])
 			.concurrency(32)
 			//.multithreaded()
 			.loglevel(crow::LogLevel::Warning)
-			//.timeout(3)
+			.timeout(30)
 			.run();
 	}
 }
