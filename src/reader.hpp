@@ -176,9 +176,13 @@ public:
             //}
 
             fseek(file, offset, SEEK_SET);
-            fread((void *)&(out->offset), sizeof(uint64_t), 1, file);
-            fread((void *)&(out->size), sizeof(uint32_t), 1, file);
+            const size_t rsize1 = fread((void *)&(out->offset), sizeof(uint64_t), 1, file);
+            const size_t rsize2 = fread((void *)&(out->size), sizeof(uint32_t), 1, file);
             fclose(file);
+
+            if(rsize1 + rsize2 != sizeof(uint64_t) + sizeof(uint32_t)) {
+                continue;
+            }
 
             //file.seekg(offset);
             //file.read((char *)&(out->offset), sizeof(uint64_t));
@@ -235,17 +239,31 @@ public:
             const size_t retry_count = 10;
             for (size_t i = 0; i < retry_count; i++)
             {
-                std::ifstream file(data_fname, std::ios::in | std::ios::binary);
+                //std::ifstream file(data_fname, std::ios::in | std::ios::binary);
+                FILE * file = fopen(data_fname.c_str(), "rb");
 
-                if (file.fail())
-                {
-                    std::cerr << "Fopen failed" << std::endl;
+                if(file == NULL) {
                     continue;
                 }
 
-                file.seekg(sel->offset);
-                file.read((char *)read_buffer, sel->size);
-                file.close();
+                //if (file.fail())
+                //{
+                //    std::cerr << "Fopen failed" << std::endl;
+                //    continue;
+                //}
+
+                fseek(file, sel->offset, SEEK_SET);
+                const size_t rsize = fread((void *)read_buffer, sel->size, 1, file);
+                //const size_t rsize2 = fread((void *)&(out->size), sizeof(uint32_t), 1, file);
+                fclose(file);
+
+                if(rsize != sel->size) {
+                    continue;
+                }
+
+                //file.seekg(sel->offset);
+                //file.read((char *)read_buffer, sel->size);
+                //file.close();
                 break;
             }
 
