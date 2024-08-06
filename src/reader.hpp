@@ -185,6 +185,7 @@ public:
 
     static bool read_thing(char * fname, size_t offset, size_t size, void* buffer)
     {
+        const size_t retry_count = 10;
         for (size_t i = 0; i < retry_count; i++)
         {
             std::atomic<bool> done = false;
@@ -253,7 +254,7 @@ public:
             size_t buffer_size = sel->size;
             uint16_t *read_buffer = (uint16_t *)malloc(buffer_size);
 
-            const size_t retry_count = 10;
+            //const size_t retry_count = 10;
             /* for (size_t i = 0; i < retry_count; i++)
             {
                 std::atomic<bool> done = false;
