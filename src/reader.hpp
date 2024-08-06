@@ -162,18 +162,29 @@ public:
         const size_t retry_count = 5;
         for (size_t i = 0; i < retry_count; i++)
         {
-            std::ifstream file(meta_fname, std::ios::in | std::ios::binary);
+            FILE * file = fopen(meta_fname.c_str(), "rb");
+            // std::ifstream file(meta_fname, std::ios::in | std::ios::binary);
 
-            if (file.fail())
-            {
-                std::cerr << "Fopen failed" << std::endl;
+            if(file == NULL) {
                 continue;
             }
 
-            file.seekg(offset);
-            file.read((char *)&(out->offset), sizeof(uint64_t));
-            file.read((char *)&(out->size), sizeof(uint32_t));
-            file.close();
+            //if (file.fail())
+            //{
+            //    std::cerr << "Fopen failed" << std::endl;
+            //    continue;
+            //}
+
+            fseek(file, offset, SEEK_SET);
+            fread((void *)&(out->offset), sizeof(uint64_t), 1, file);
+            fread((void *)&(out->size), sizeof(uint32_t), 1, file);
+            fclose(file);
+
+            //file.seekg(offset);
+            //file.read((char *)&(out->offset), sizeof(uint64_t));
+            //file.read((char *)&(out->size), sizeof(uint32_t));
+            //file.close();
+
             break;
         }
 
