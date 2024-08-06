@@ -205,7 +205,7 @@ public:
 
         uint16_t *from_cache = 0;
 
-        if (global_chunk_cache_mutex.try_lock_for(cache_lock_timeout))
+        if (false && global_chunk_cache_mutex.try_lock_for(cache_lock_timeout))
         {
             for (size_t i = 0; i < global_cache_size; i++)
             {
@@ -239,31 +239,30 @@ public:
             const size_t retry_count = 10;
             for (size_t i = 0; i < retry_count; i++)
             {
-                std::ifstream file(data_fname, std::ios::in | std::ios::binary);
-                //FILE * file = fopen(data_fname.c_str(), "rb");
+                //std::ifstream file(data_fname, std::ios::in | std::ios::binary);
+                FILE * file = fopen(data_fname.c_str(), "rb");
 
-                //if(file == NULL) {
-                //    continue;
-                //}
-
-                if (file.fail())
-                {
-                    std::cerr << "Fopen failed" << std::endl;
+                if(file == NULL) {
                     continue;
                 }
 
-                //fseek(file, sel->offset, SEEK_SET);
-                //const size_t rsize = fread((void *)read_buffer, sel->size, 1, file);
-                //const size_t rsize2 = fread((void *)&(out->size), sizeof(uint32_t), 1, file);
-                //fclose(file);
-
-                //if(rsize != sel->size) {
+                //if (file.fail())
+                //{
+                //    std::cerr << "Fopen failed" << std::endl;
                 //    continue;
                 //}
 
-                file.seekg(sel->offset);
-                file.read((char *)read_buffer, sel->size);
-                file.close();
+                fseek(file, sel->offset, SEEK_SET);
+                const size_t rsize = fread((void *)read_buffer, sel->size, 1, file);
+                fclose(file);
+
+                if(rsize != sel->size) {
+                    continue;
+                }
+
+                //file.seekg(sel->offset);
+                //file.read((char *)read_buffer, sel->size);
+                //file.close();
                 break;
             }
 
@@ -302,7 +301,7 @@ public:
             // Copy result
             memcpy((void *)out, (void *)read_decomp_buffer, max_chunk_size);
 
-            if (global_chunk_cache_mutex.try_lock_for(cache_lock_timeout))
+            if (false && global_chunk_cache_mutex.try_lock_for(cache_lock_timeout))
             {
                 if (global_chunk_cache[global_chunk_cache_last].ptr != 0)
                     free(global_chunk_cache[global_chunk_cache_last].ptr);
