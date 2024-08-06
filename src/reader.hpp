@@ -183,7 +183,7 @@ public:
         return out;
     }
 
-    static bool read_thing(char * fname, size_t offset, size_t size, void* buffer)
+    static bool read_thing(const char * fname, size_t offset, size_t size, void* buffer)
     {
         const size_t retry_count = 10;
         for (size_t i = 0; i < retry_count; i++)
