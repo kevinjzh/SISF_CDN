@@ -183,6 +183,35 @@ public:
         return out;
     }
 
+    static bool read_thing(char * fname, size_t offset, size_t size, void* buffer)
+    {
+        for (size_t i = 0; i < retry_count; i++)
+        {
+            std::atomic<bool> done = false;
+
+            // std::ifstream file(data_fname, std::ios::in | std::ios::binary);
+            FILE *file = fopen(fname, "rb");
+
+            if (file == NULL)
+            {
+                continue;
+            }
+
+            fseek(file, offset, SEEK_SET);
+            const size_t rsize = fread(buffer, size, 1, file);
+            fclose(file);
+
+            if (rsize != size)
+            {
+                continue;
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     std::mutex chunk_cache_mutex;
     std::deque<std::tuple<size_t, uint16_t *>> chunk_cache;
 
@@ -225,13 +254,10 @@ public:
             uint16_t *read_buffer = (uint16_t *)malloc(buffer_size);
 
             const size_t retry_count = 10;
-            for (size_t i = 0; i < retry_count; i++)
+            /* for (size_t i = 0; i < retry_count; i++)
             {
                 std::atomic<bool> done = false;
 
-                //auto bleah = std::thread{[&]{
-                 //    done = true;         
-               //}};
                 //std::ifstream file(data_fname, std::ios::in | std::ios::binary);
                 FILE * file = fopen(data_fname.c_str(), "rb");
 
@@ -248,7 +274,11 @@ public:
                 }
 
                 break;
-            }
+            } */
+
+            std::future<bool> res = std::async(std::launch::async, read_thing, data_fname.c_str(), sel->offset, sel->size, (void *) read_buffer);
+
+            res.wait();
 
             // Decompress
             size_t decomp_size;
