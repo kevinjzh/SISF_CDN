@@ -1382,7 +1382,7 @@ int main(int argc, char *argv[])
 
 						if (chunk == 0)
 						{
-							chunk = chunk_reader->load_chunk(sub_chunk_id);
+							//chunk = chunk_reader->load_chunk(sub_chunk_id);
 							chunk_cache[sub_chunk_id] = chunk;
 						}
 
@@ -1402,7 +1402,7 @@ int main(int argc, char *argv[])
 										   ((j - y_begin) * chunk_sizes[0]) +				   // Y
 										   (i - x_begin);									   // X
 
-					const uint16_t v = chunk[coffset];
+					const uint16_t v = 0; //chunk[coffset];
 					out_buffer[ooffset] = v;
 				}
 			}

@@ -576,7 +576,7 @@ public:
                             chunk = chunk_cache[*chunk_identifier];
                             if (chunk == 0)
                             {
-                                //chunk = chunk_reader->load_chunk(sub_chunk_id);
+                                chunk = chunk_reader->load_chunk(sub_chunk_id);
                                 chunk_cache[*chunk_identifier] = chunk;
                             }
 
@@ -608,7 +608,7 @@ public:
                                                ((j - ys) * osizex) +            // Y
                                                ((i - xs));                      // X
 
-                        //out_buffer[ooffset] = chunk[coffset];
+                        out_buffer[ooffset] = chunk[coffset];
                     }
                 }
             }
