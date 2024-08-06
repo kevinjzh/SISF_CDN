@@ -163,17 +163,10 @@ public:
         for (size_t i = 0; i < retry_count; i++)
         {
             FILE * file = fopen(meta_fname.c_str(), "rb");
-            // std::ifstream file(meta_fname, std::ios::in | std::ios::binary);
 
             if(file == NULL) {
                 continue;
             }
-
-            //if (file.fail())
-            //{
-            //    std::cerr << "Fopen failed" << std::endl;
-            //    continue;
-            //}
 
             fseek(file, offset, SEEK_SET);
             const size_t rsize1 = fread((void *)&(out->offset), sizeof(uint64_t), 1, file);
@@ -183,11 +176,6 @@ public:
             if(rsize1 + rsize2 != sizeof(uint64_t) + sizeof(uint32_t)) {
                 continue;
             }
-
-            //file.seekg(offset);
-            //file.read((char *)&(out->offset), sizeof(uint64_t));
-            //file.read((char *)&(out->size), sizeof(uint32_t));
-            //file.close();
 
             break;
         }
@@ -246,12 +234,6 @@ public:
                     continue;
                 }
 
-                //if (file.fail())
-                //{
-                //    std::cerr << "Fopen failed" << std::endl;
-                //    continue;
-                //}
-
                 fseek(file, sel->offset, SEEK_SET);
                 const size_t rsize = fread((void *)read_buffer, sel->size, 1, file);
                 fclose(file);
@@ -260,9 +242,6 @@ public:
                     continue;
                 }
 
-                //file.seekg(sel->offset);
-                //file.read((char *)read_buffer, sel->size);
-                //file.close();
                 break;
             }
 
