@@ -207,7 +207,7 @@ public:
                 continue;
             }
 
-            *done = true;
+            done->store(true);
             return;
         }
     }
