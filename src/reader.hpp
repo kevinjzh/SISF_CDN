@@ -39,6 +39,7 @@ std::timed_mutex global_chunk_cache_mutex;
 size_t global_cache_size = 5000;
 global_chunk_line *global_chunk_cache = (global_chunk_line *)calloc(global_cache_size, sizeof(global_chunk_line));
 size_t global_chunk_cache_last = 0;
+const bool disable_cache = true;
 
 // https://stackoverflow.com/questions/8401777/simple-glob-in-c-on-unix-system
 std::vector<std::string> glob_tool(const std::string &pattern)
@@ -220,7 +221,7 @@ public:
 
         uint16_t *from_cache = 0;
 
-        if (false && global_chunk_cache_mutex.try_lock_for(cache_lock_timeout))
+        if (!disable_cache && global_chunk_cache_mutex.try_lock_for(cache_lock_timeout))
         {
             for (size_t i = 0; i < global_cache_size; i++)
             {
@@ -298,7 +299,7 @@ public:
             // Copy result
             memcpy((void *)out, (void *)read_decomp_buffer, max_chunk_size);
 
-            if (false && global_chunk_cache_mutex.try_lock_for(cache_lock_timeout))
+            if (!disable_cache && global_chunk_cache_mutex.try_lock_for(cache_lock_timeout))
             {
                 if (global_chunk_cache[global_chunk_cache_last].ptr != 0)
                     free(global_chunk_cache[global_chunk_cache_last].ptr);
