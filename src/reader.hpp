@@ -604,10 +604,10 @@ public:
                 packed_reader * chunk_reader = nullptr;
                 std::tuple<size_t, size_t, size_t, size_t, size_t> * chunk_id = nullptr;
 
-                chunk_reader = worker_payload->back().first;
-                chunk_id = worker_payload->back().second;
+                chunk_reader = worker_payloads.back().first;
+                chunk_id = worker_payloads.back().second;
 
-                worker_payloads->pop_back();
+                worker_payloads.pop_back();
 
                 if (chunk_reader != nullptr)
                 {
