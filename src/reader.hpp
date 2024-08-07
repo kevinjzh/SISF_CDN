@@ -518,7 +518,7 @@ public:
         uint16_t *out_buffer = (uint16_t *)malloc(buffer_size);
 
         // Define map for storing already decompressed chunks
-        std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, uint16_t *>> chunk_cache;
+        std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, uint16_t *> chunk_cache;
         std::vector<std::pair<packed_reader *, std::tuple<size_t, size_t, size_t, size_t, size_t> *>> worker_payloads;
 
         // Scaled metachunk size
