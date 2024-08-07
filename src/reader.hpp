@@ -592,7 +592,7 @@ public:
                             chunk_cache[*chunk_identifier] = 0;
                             worker_payloads.push_back({chunk_reader, chunk_identifier});
                         } else {
-                            delete chunk_identifier;
+                            //delete chunk_identifier;
                         }
                     }
                 }
