@@ -518,7 +518,7 @@ public:
         uint16_t *out_buffer = (uint16_t *)malloc(buffer_size);
 
         // Define map for storing already decompressed chunks
-        std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, uint16_t *> chunk_cache;
+        std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, std::atomic<uint16_t *>> chunk_cache;
         std::vector<std::pair<packed_reader *, std::tuple<size_t, size_t, size_t, size_t, size_t> *>> worker_payloads;
 
         // Scaled metachunk size
@@ -589,7 +589,7 @@ public:
                         chunk_identifier = new std::tuple(c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id);
 
                         if(chunk_cache.count(*chunk_identifier) == 0) {
-                            chunk_cache[*chunk_identifier] = 0;
+                            chunk_cache[*chunk_identifier].store(0);
                             worker_payloads.push_back({chunk_reader, chunk_identifier});
                         } else {
                             //delete chunk_identifier;
@@ -607,7 +607,7 @@ public:
             worker_payloads.pop_back();
 
             uint16_t *chunk = chunk_reader->load_chunk(std::get<4>(*chunk_id));
-            chunk_cache[*chunk_id] = chunk;
+            chunk_cache[*chunk_id].store(chunk);
         }
         //});
 
@@ -681,7 +681,7 @@ public:
                             // }
 
                             do {
-                                chunk = chunk_cache[*chunk_identifier];
+                                chunk = chunk_cache[*chunk_identifier].load();
                                 if(chunk == 0) {
                                      std::this_thread::sleep_for(std::chrono::microseconds(100));
                                 }
