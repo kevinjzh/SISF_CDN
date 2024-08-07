@@ -611,6 +611,10 @@ public:
         }
         });
 
+        if(worker.joinable()) {
+            worker.join();
+        }
+
         for (size_t c = 0; c < channel_count; c++)
         {
             for (size_t i = xs; i < xe; i++)
@@ -721,9 +725,7 @@ public:
             }
         }
 
-        if(worker.joinable()) {
-            worker.join();
-        }
+        
 
         //if (chunk_identifier != nullptr)
         //{
