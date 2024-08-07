@@ -601,20 +601,17 @@ public:
 
         std::thread worker([&](){
             while(!worker_payloads.empty()) {
-                packed_reader * chunk_reader = nullptr;
-                std::tuple<size_t, size_t, size_t, size_t, size_t> * chunk_id = nullptr;
-
-                chunk_reader = worker_payloads.back().first;
-                chunk_id = worker_payloads.back().second;
+                packed_reader * chunk_reader = worker_payloads.back().first;
+                std::tuple<size_t, size_t, size_t, size_t, size_t> * chunk_id = worker_payloads.back().second;
 
                 worker_payloads.pop_back();
 
-                if (chunk_reader != nullptr)
-                {
+                //if (chunk_reader != nullptr)
+                //{
                     uint16_t * chunk = chunk_reader->load_chunk(std::get<4>(*chunk_id));
                     chunk_cache[*chunk_id] = chunk;
                     //delete chunk_id;
-                }
+                //}
             }
         });
 
@@ -690,7 +687,7 @@ public:
                             do {
                                 chunk = chunk_cache[*chunk_identifier];
                                 if(chunk == 0) {
-                                     std::this_thread::sleep_for(std::chrono::microseconds(10));
+                                     std::this_thread::sleep_for(std::chrono::microseconds(100));
                                 }
                             } while(chunk == 0);
 
@@ -739,7 +736,7 @@ public:
 
         for (auto it = chunk_cache.begin(); it != chunk_cache.end(); it++)
         {
-            //free(it->second);
+            free(it->second);
         }
 
         if (CHUNK_TIMER)
