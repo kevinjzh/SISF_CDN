@@ -519,6 +519,7 @@ public:
 
         // Define map for storing already decompressed chunks
         std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, uint16_t *> chunk_cache;
+        std::vector<std::pair<packed_reader *, std::tuple<size_t, size_t, size_t, size_t, size_t> *>> worker_payloads;
 
         // Scaled metachunk size
         const size_t mcx = mchunkx / scale;
@@ -536,6 +537,86 @@ public:
         size_t cxmin, cxmax, cxsize;
         size_t cymin, cymax, cysize;
         size_t czmin, czmax, czsize;
+
+        std::map<std::tuple<size_t, size_t, size_t, size_t, size_t>, packed_reader*> all_mchunks;
+
+        for (size_t c = 0; c < channel_count; c++)
+        {
+            for (size_t i = xs; i < xe; i++)
+            {
+                const size_t xmin = mcx * (i / mcx);         // lower bound of mchunk
+                const size_t chunk_id_x = i / ((size_t)mcx); // mchunk x id
+                const size_t x_in_chunk = i - xmin;          // x displacement inside chunk
+
+                for (size_t j = ys; j < ye; j++)
+                {
+                    const size_t ymin = mcy * (j / mcy);
+                    const size_t chunk_id_y = j / ((size_t)mcy);
+                    const size_t y_in_chunk = j - ymin;
+
+                    for (size_t k = zs; k < ze; k++)
+                    {
+                        const size_t zmin = mcz * (k / mcz);
+                        const size_t chunk_id_z = k / ((size_t)mcz);
+                        const size_t z_in_chunk = k - zmin;
+
+                        bool force = false;
+                        if (chunk_reader == nullptr ||
+                            chunk_identifier == nullptr ||
+                            last_x != chunk_id_x ||
+                            last_y != chunk_id_y ||
+                            last_z != chunk_id_z ||
+                            last_c != c)
+                        {
+                            force = true;
+                            chunk_reader = get_mchunk(scale, c, chunk_id_x, chunk_id_y, chunk_id_z);
+
+                            all_mchunks[{scale, c, chunk_id_x, chunk_id_y, chunk_id_z}] = chunk_reader;
+
+                            last_x = chunk_id_x;
+                            last_y = chunk_id_y;
+                            last_z = chunk_id_z;
+                        }
+
+                        // Shift ranges for cropping
+                        const size_t x_in_chunk_offset = x_in_chunk + chunk_reader->cropstartx;
+                        const size_t y_in_chunk_offset = y_in_chunk + chunk_reader->cropstarty;
+                        const size_t z_in_chunk_offset = z_in_chunk + chunk_reader->cropstartz;
+
+                        // Find sub chunk id from coordinates
+                        sub_chunk_id = chunk_reader->find_index(x_in_chunk_offset, y_in_chunk_offset, z_in_chunk_offset);
+
+                        chunk_identifier = new std::tuple(c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id);
+
+                        if(chunk_cache.count(*chunk_identifier) == 0) {
+                            chunk_cache[*chunk_identifier] = 0;
+                            worker_payloads.push_back({chunk_reader, chunk_identifier});
+                        } else {
+                            delete chunk_identifier;
+                        }
+                    }
+                }
+            }
+        }
+
+        std::thread worker([&](){
+            while(!worker_payloads.empty()) {
+                packed_reader * chunk_reader = nullptr;
+                std::tuple<size_t, size_t, size_t, size_t, size_t> * chunk_id = nullptr;
+
+                chunk_reader = worker_payload->back().first;
+                chunk_id = worker_payload->back().second;
+
+                worker_payloads->pop_back();
+
+                if (chunk_reader != nullptr)
+                {
+                    uint16_t * chunk = chunk_reader->load_chunk(std::get<4>(*chunk_id));
+                    chunk_cache[0][*chunk_id] = chunk;
+                    delete chunk_id;
+                }
+            }
+        });
 
         for (size_t c = 0; c < channel_count; c++)
         {
@@ -599,12 +680,19 @@ public:
                             chunk_identifier = new std::tuple(c, chunk_id_x, chunk_id_y, chunk_id_z, sub_chunk_id);
 
                             // Check if the chunk is in the tmp cache
-                            chunk = chunk_cache[*chunk_identifier];
-                            if (chunk == 0)
-                            {
-                                chunk = chunk_reader->load_chunk(sub_chunk_id);
-                                chunk_cache[*chunk_identifier] = chunk;
-                            }
+                            // chunk = chunk_cache[*chunk_identifier];
+                            // if (chunk == 0)
+                            // {
+                            //     chunk = chunk_reader->load_chunk(sub_chunk_id);
+                            //     chunk_cache[*chunk_identifier] = chunk;
+                            // }
+
+                            do {
+                                chunk = chunk_cache[*chunk_identifier];
+                                if(chunk == 0) {
+                                     std::this_thread::sleep_for(std::chrono::microseconds(10));
+                                }
+                            } while(chunk == 0);
 
                             // Find the start/stop coordinates of this chunk
                             cxmin = ((size_t)chunk_reader->chunkx) * (x_in_chunk_offset / ((size_t)chunk_reader->chunkx)); // Minimum value of the chunk
@@ -640,10 +728,14 @@ public:
             }
         }
 
-        if (chunk_identifier != nullptr)
-        {
-            delete chunk_identifier;
+        if(worker.joinable()) {
+            worker.join();
         }
+
+        //if (chunk_identifier != nullptr)
+        //{
+        //    delete chunk_identifier;
+        //}
 
         for (auto it = chunk_cache.begin(); it != chunk_cache.end(); it++)
         {
