@@ -183,7 +183,7 @@ public:
         return out;
     }
 
-    static bool read_thing(const char * fname, size_t offset, size_t size, void* buffer)
+    static void read_thing(const char * fname, size_t offset, size_t size, void* buffer, std::atomic_bool *done)
     {
         const size_t retry_count = 10;
         for (size_t i = 0; i < retry_count; i++)
@@ -207,10 +207,9 @@ public:
                 continue;
             }
 
-            return true;
+            *done = true;
+            return;
         }
-
-        return false;
     }
 
     std::mutex chunk_cache_mutex;
@@ -277,9 +276,22 @@ public:
                 break;
             } */
 
-            std::future<bool> res = std::async(std::launch::async, read_thing, data_fname.c_str(), sel->offset, sel->size, (void *) read_buffer);
+           std::atomic_bool done = false;
 
-            res.wait();
+            std::thread worker(read_thing, data_fname.c_str(), sel->offset, sel->size, (void *) read_buffer, &done);
+
+
+            /* size_t i = 0;
+            while(!(*done)) {
+                std::this_thread::sleep_for(std::chrono::microseconds(10));
+                i++;
+
+                if( i > 1000 ) {
+                    worker.~thread();
+                }
+            }
+
+            worker.~thread(); */
 
             // Decompress
             size_t decomp_size;
