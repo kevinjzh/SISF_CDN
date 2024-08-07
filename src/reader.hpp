@@ -251,13 +251,15 @@ public:
             size_t buffer_size = sel->size;
             uint16_t *read_buffer = (uint16_t *)malloc(buffer_size);
 
-           std::atomic_bool done = false;
+            std::atomic_bool done = false;
 
-            std::thread worker(read_thing, data_fname.c_str(), sel->offset, sel->size, (void *) read_buffer, &done);
+            std::thread worker(read_thing, data_fname.c_str(), sel->offset, sel->size, (void *)read_buffer, &done);
 
-            if(worker.joinable()) {
+            if (worker.joinable())
+            {
                 worker.join();
             }
+
             /* size_t i = 0;
             while(!(*done)) {
                 std::this_thread::sleep_for(std::chrono::microseconds(10));
