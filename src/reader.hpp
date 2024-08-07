@@ -721,9 +721,9 @@ public:
             }
         }
 
-        //if(worker.joinable()) {
-        //    worker.join();
-        //}
+        if(worker.joinable()) {
+            worker.join();
+        }
 
         //if (chunk_identifier != nullptr)
         //{
