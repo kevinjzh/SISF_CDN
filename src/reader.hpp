@@ -739,7 +739,7 @@ public:
 
         for (auto it = chunk_cache.begin(); it != chunk_cache.end(); it++)
         {
-            free(it->second);
+            //free(it->second);
         }
 
         if (CHUNK_TIMER)
