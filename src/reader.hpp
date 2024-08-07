@@ -253,24 +253,15 @@ public:
 
             std::atomic_bool done = false;
 
-            std::thread worker(read_thing, data_fname.c_str(), sel->offset, sel->size, (void *)read_buffer, &done);
+            read_thing(data_fname.c_str(), sel->offset, sel->size, (void *)read_buffer, &done);
 
+            /*
+            std::thread worker(read_thing, data_fname.c_str(), sel->offset, sel->size, (void *)read_buffer, &done);
             if (worker.joinable())
             {
                 worker.join();
             }
-
-            /* size_t i = 0;
-            while(!(*done)) {
-                std::this_thread::sleep_for(std::chrono::microseconds(10));
-                i++;
-
-                if( i > 1000 ) {
-                    worker.~thread();
-                }
-            }
-
-            worker.~thread(); */
+            */
 
             // Decompress
             size_t decomp_size;
