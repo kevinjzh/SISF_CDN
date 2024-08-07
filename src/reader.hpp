@@ -599,21 +599,17 @@ public:
             }
         }
 
-        std::thread worker([&](){
-            while(!worker_payloads.empty()) {
-                packed_reader * chunk_reader = worker_payloads.back().first;
-                std::tuple<size_t, size_t, size_t, size_t, size_t> * chunk_id = worker_payloads.back().second;
+        // std::thread worker([&](){
+        while (!worker_payloads.empty())
+        {
+            packed_reader *chunk_reader = worker_payloads.back().first;
+            std::tuple<size_t, size_t, size_t, size_t, size_t> *chunk_id = worker_payloads.back().second;
+            worker_payloads.pop_back();
 
-                worker_payloads.pop_back();
-
-                //if (chunk_reader != nullptr)
-                //{
-                    uint16_t * chunk = chunk_reader->load_chunk(std::get<4>(*chunk_id));
-                    chunk_cache[*chunk_id] = chunk;
-                    //delete chunk_id;
-                //}
-            }
-        });
+            uint16_t *chunk = chunk_reader->load_chunk(std::get<4>(*chunk_id));
+            chunk_cache[*chunk_id] = chunk;
+        }
+        //});
 
         for (size_t c = 0; c < channel_count; c++)
         {
