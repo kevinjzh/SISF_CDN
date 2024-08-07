@@ -278,7 +278,9 @@ public:
 
             std::thread worker(read_thing, data_fname.c_str(), sel->offset, sel->size, (void *) read_buffer, &done);
 
-
+            if(worker.joinable()) {
+                worker.join();
+            }
             /* size_t i = 0;
             while(!(*done)) {
                 std::this_thread::sleep_for(std::chrono::microseconds(10));
