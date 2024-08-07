@@ -599,7 +599,7 @@ public:
             }
         }
 
-        // std::thread worker([&](){
+        std::thread worker([&](){
         while (!worker_payloads.empty())
         {
             packed_reader *chunk_reader = worker_payloads.back().first;
@@ -609,7 +609,7 @@ public:
             uint16_t *chunk = chunk_reader->load_chunk(std::get<4>(*chunk_id));
             chunk_cache[*chunk_id].store(chunk);
         }
-        //});
+        });
 
         for (size_t c = 0; c < channel_count; c++)
         {
