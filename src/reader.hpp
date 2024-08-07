@@ -251,29 +251,6 @@ public:
             size_t buffer_size = sel->size;
             uint16_t *read_buffer = (uint16_t *)malloc(buffer_size);
 
-            //const size_t retry_count = 10;
-            /* for (size_t i = 0; i < retry_count; i++)
-            {
-                std::atomic<bool> done = false;
-
-                //std::ifstream file(data_fname, std::ios::in | std::ios::binary);
-                FILE * file = fopen(data_fname.c_str(), "rb");
-
-                if(file == NULL) {
-                    continue;
-                }
-
-                fseek(file, sel->offset, SEEK_SET);
-                const size_t rsize = fread((void *)read_buffer, sel->size, 1, file);
-                fclose(file);
-
-                if(rsize != sel->size) {
-                    continue;
-                }
-
-                break;
-            } */
-
            std::atomic_bool done = false;
 
             std::thread worker(read_thing, data_fname.c_str(), sel->offset, sel->size, (void *) read_buffer, &done);
